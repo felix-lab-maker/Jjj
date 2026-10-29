@@ -1,0 +1,71 @@
+name: Build APKs
+
+on:
+  push:
+    branches: [ main, arena/* ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: |
+          sdkmanager --install "platforms;android-29" "build-tools;30.0.3" "platform-tools"
+          sdkmanager --list_installed
+
+      - name: Build MathAscend APK
+        run: |
+          export ANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-29/android.jar"
+          export BUILD_TOOLS="$ANDROID_SDK_ROOT/build-tools/30.0.3"
+          chmod +x MathAscend/build-apk.sh
+          ./MathAscend/build-apk.sh
+        working-directory: MathAscend
+
+      - name: Build Angelspiel APK
+        run: |
+          export ANDROID_JAR="$ANDROID_SDK_ROOT/platforms/android-29/android.jar"
+          export BUILD_TOOLS="$ANDROID_SDK_ROOT/build-tools/30.0.3"
+          chmod +x Angelspiel/build-apk.sh
+          ./Angelspiel/build-apk.sh
+        working-directory: Angelspiel
+
+      - name: List APKs
+        run: |
+          ls -lh MathAscend/releases/ Angelspiel/releases/
+          sha256sum MathAscend/releases/*.apk Angelspiel/releases/*.apk || true
+
+      - name: Upload MathAscend APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MathAscend-apk
+          path: MathAscend/releases/*.apk
+
+      - name: Upload Angelspiel APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Angelspiel-apk
+          path: Angelspiel/releases/*.apk
+
+      - name: Create Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            MathAscend/releases/*.apk
+            Angelspiel/releases/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
