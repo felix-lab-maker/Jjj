@@ -1,0 +1,576 @@
+<!DOCTYPE html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>Angelspiel</title><style>
+:root{--bg:#06141f;--panel:#0f2430;--panel2:#112c3d;--muted:#8aa8b8;--cyan:#4de0ff;--teal:#2ee5a8;--amber:#ffb84d;--pink:#ff7eb6;--line:#20394d}
+*{box-sizing:border-box}*{ -webkit-tap-highlight-color:transparent }
+body{margin:0;background:var(--bg);color:#eef6ff;font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:760px;margin:auto;padding:22px 18px 110px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-size:19px;font-weight:900;letter-spacing:2px}
+.brand span{color:var(--cyan)}
+.tag,.pill{border:1px solid #2a4a5e;border-radius:30px;padding:6px 11px;font-size:11px;color:var(--muted);letter-spacing:.5px}
+h1{font-size:38px;line-height:1.08;letter-spacing:-1.4px;margin:18px 0 10px}
+h2{font-size:22px;margin:6px 0 12px}
+h3{margin:0 0 8px}
+p{color:var(--muted);line-height:1.6}
+.eyebrow{font-size:11px;letter-spacing:2px;color:var(--cyan);font-weight:800}
+.hero{padding:18px 0 10px}.glow{color:var(--teal)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;margin:12px 0;position:relative;overflow:hidden}
+.featured{background:linear-gradient(135deg,#0f2a3a 0%,#12384a 55%,#0d2e4a 100%);border-color:#2e6a7a}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px 8px;text-align:center}
+.stat b{display:block;font-size:22px;color:var(--cyan)}
+.stat small{color:var(--muted);font-size:11px}
+button{font:inherit;cursor:pointer;border:0;border-radius:13px;background:#233a4d;color:white;padding:13px 16px;font-weight:700;transition:.15s}
+button:active{transform:scale(.98)}button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:linear-gradient(135deg,var(--cyan),var(--teal));color:#05131c;width:100%;margin-top:12px;box-shadow:0 6px 18px rgba(77,224,255,.25)}
+.secondary{background:#1e3042;color:#cde8ff}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.world{display:flex;gap:14px;align-items:center}
+.num{min-width:46px;height:46px;border-radius:13px;background:#163042;color:var(--cyan);display:grid;place-items:center;font-weight:800;border:1px solid #2a5566}
+.world .info{flex:1}
+.world h3{font-size:16px}.world p{font-size:12px;margin:2px 0 0}.world button{padding:10px 12px;font-size:12px;white-space:nowrap}
+.progress{height:6px;border-radius:10px;background:#1a3242;margin-top:12px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--teal));transition:.3s}
+nav{position:fixed;bottom:0;left:0;right:0;background:#081620f2;border-top:1px solid #1f3a4b;display:flex;justify-content:center;padding:10px 6px max(10px,env(safe-area-inset-bottom));gap:4px;backdrop-filter:blur(10px);z-index:10}
+nav button{background:transparent;font-size:11px;padding:10px 8px;color:var(--muted);flex:1;max-width:120px}
+nav button.active{color:var(--cyan);background:#143040}
+.lake{height:170px;border-radius:16px;background:linear-gradient(180deg,#0a2a3a 0%,#0e3a4e 45%,#143d55 100%);border:1px solid #2a5a73;position:relative;overflow:hidden;margin:16px 0}
+.lake::after{content:"";position:absolute;left:-20%;right:-20%;top:58%;height:90px;background:radial-gradient(ellipse at center,rgba(77,224,255,.18),transparent 70%);animation: shimmer 3s infinite}
+.lake .water{position:absolute;inset:0;background:
+  radial-gradient(ellipse 120px 18px at 30% 48%,rgba(255,255,255,.12),transparent 70%),
+  radial-gradient(ellipse 180px 22px at 70% 55%,rgba(77,224,255,.12),transparent 70%)}
+.bobber{position:absolute;left:50%;top:42%;width:14px;height:14px;background:var(--amber);border:2px solid white;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(255,184,77,.8);z-index:2}
+.bobber.rippling{animation: bob 1.1s infinite}
+.bobber.biting{animation: biteShake .18s infinite}
+.line{position:absolute;left:50%;top:0;width:1px;height:42%;background:rgba(255,255,255,.45);transform:translateX(-50%)}
+.ripple{position:absolute;left:50%;top:42%;width:60px;height:22px;border:1px solid rgba(255,255,255,.35);border-radius:50%;transform:translate(-50%,-50%);opacity:0}
+.ripple.animate{animation: ripple 1.6s ease-out forwards}
+@keyframes bob{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-58%)}}
+@keyframes biteShake{0%{transform:translate(-53%,-50%)}50%{transform:translate(-47%,-58%)}100%{transform:translate(-53%,-50%)}}
+@keyframes ripple{0%{width:10px;height:8px;opacity:.8}100%{width:140px;height:50px;opacity:0}}
+@keyframes shimmer{0%{transform:translateX(-10%)}50%{transform:translateX(10%)}100%{transform:translateX(-10%)}}
+.powerbox{margin:10px 0}
+.powerbar{height:14px;border-radius:20px;background:#0b2330;border:1px solid #2a4a5e;overflow:hidden;position:relative}
+.powerfill{height:100%;background:linear-gradient(90deg,#2ee5a8,#4de0ff,#ffb84d);transition:none;width:0%}
+.powerlabels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px}
+.fightbar{height:22px;border-radius:12px;background:#0a2330;border:1px solid #2a5a73;position:relative;overflow:hidden;margin:14px 0}
+.zone{position:absolute;top:3px;bottom:3px;background:rgba(46,229,168,.35);border:1px solid #2ee5a8;border-radius:8px}
+.marker{position:absolute;top:2px;bottom:2px;width:6px;background:white;border-radius:4px;box-shadow:0 0 8px rgba(255,255,255,.9);transition:none}
+.catchmeter{height:8px;background:#0b2330;border-radius:10px;overflow:hidden;border:1px solid #1f3a4b;margin-top:10px}
+.catchmeter i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));width:0%;transition:.25s}
+.question{font-size:18px;line-height:1.5;margin:14px 0;white-space:pre-line}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.answer{min-height:60px;border:1px solid #2a4a5e}
+.good{background:#123e31!important;border-color:var(--teal)!important}
+.bad{background:#4c2038!important;border-color:#ff7ca2!important}
+.feedback{padding:14px;border-radius:12px;background:#091c2a;margin-top:14px;line-height:1.6;border:1px solid #1f3a4b}
+.hidden{display:none!important}
+.sectionhead{margin-top:28px}
+.notice{font-size:13px;border-left:3px solid var(--cyan);padding-left:12px}
+.shopitem{display:flex;align-items:center;gap:12px}
+.shopitem div{flex:1}.shopitem p{font-size:13px;margin:2px 0 0}
+.score{font-size:56px;color:var(--cyan);font-weight:900}
+.theme-pink{--cyan:#ff8dc7;--teal:#ffcf5c;--bg:#1a1120;--panel:#261a2e;--panel2:#2e2136;--line:#4a2d4a;--muted:#c9a8c0}
+.theme-lime{--cyan:#c0ff6b;--teal:#4de0ff;--bg:#0e1a0f;--panel:#1a2a1c;--panel2:#1f3321;--line:#314a33;--muted:#a8c0a6}
+.rank{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.dex{ display:grid;grid-template-columns:1fr 1fr;gap:10px }
+.dexcard{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center;opacity:.5}
+.dexcard.caught{opacity:1;border-color:rgba(77,224,255,.4);box-shadow:0 4px 12px rgba(77,224,255,.12)}
+.dexcard b{display:block;font-size:14px}
+.dexcard small{font-size:11px;color:var(--muted)}
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.5px}
+.badge-common{background:#1e3a2e;color:#8ef0c0}
+.badge-rare{background:#2a2e4a;color:#a8b4ff}
+.badge-epic{background:#3d2040;color:#ffb3ff}
+.badge-legend{background:linear-gradient(135deg,#ffb84d,#ff7eb6);color:#1a0f00}
+.bigfish{font-size:42px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.4))}
+.pulse{animation:pulse .5s ease}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+a{color:var(--cyan)}
+</style><body><main><header><div class="brand">ANGEL<span>SPIEL</span></div><span class="tag">OFFLINE · V1</span></header><div id="view"></div></main><nav id="nav"></nav><script>
+'use strict';
+const KEY='angelspiel-v1';
+let s; try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+s=Object.assign({coins:80,xp:0,unlocked:0,best:0,history:[],themes:['cyan'],theme:'cyan',sonar:false,rod:0,caughtDex:[],total:0}, s||{});
+let tab='home', game=null, timers={power:null,fight:null,bite:null};
+const worlds=[
+  ['01','Dorfteich','Karpfen · Barsch · Friedfisch'],
+  ['02','Waldfluss','Forelle · Hecht · Strömung'],
+  ['03','Bergsee','Saibling · Seesaibling · Tiefe'],
+  ['04','Steilküste','Makrele · Wolfsbarsch · Brandung'],
+  ['05','Tiefsee','Thunfisch · Schwertfisch · Sturm'],
+  ['06','Legendenreich','Riesenkrake · Leviathan · Mythos']
+];
+const fishPools=[
+  [{n:'Karpfen',e:'🐟',r:'häufig',pts:100,sz:[1.2,4.0]},{n:'Barsch',e:'🐟',r:'häufig',pts:110,sz:[0.6,1.8]},{n:'Schleie',e:'🐠',r:'häufig',pts:95,sz:[0.8,2.2]},{n:'Rotfeder',e:'🐟',r:'häufig',pts:90,sz:[0.4,1.2]},{n:'Goldkarpfen',e:'✨🐟',r:'selten',pts:220,sz:[2.0,3.5]}],
+  [{n:'Bachforelle',e:'🐟',r:'häufig',pts:120,sz:[0.7,2.0]},{n:'Hecht',e:'🦈',r:'selten',pts:200,sz:[2.5,7.0]},{n:'Äsche',e:'🐠',r:'häufig',pts:115,sz:[0.5,1.4]},{n:'Aal',e:'🐍',r:'selten',pts:180,sz:[1.0,2.8]},{n:'Goldforelle',e:'✨🐟',r:'episch',pts:320,sz:[1.5,2.5]}],
+  [{n:'Seesaibling',e:'🐟',r:'häufig',pts:140,sz:[0.9,2.4]},{n:'Bergforelle',e:'🐟',r:'häufig',pts:135,sz:[0.8,1.9]},{n:'Felchen',e:'🐠',r:'häufig',pts:120,sz:[0.6,1.6]},{n:'Namaycush',e:'🦈',r:'selten',pts:260,sz:[3.0,8.0]},{n:'Eisforelle',e:'❄️🐟',r:'episch',pts:380,sz:[2.2,4.0]}],
+  [{n:'Makrele',e:'🐟',r:'häufig',pts:150,sz:[0.5,1.2]},{n:'Wolfsbarsch',e:'🐟',r:'selten',pts:240,sz:[1.5,4.5]},{n:'Dorade',e:'🐠',r:'häufig',pts:160,sz:[0.7,1.8]},{n:'Meeräsche',e:'🐟',r:'häufig',pts:130,sz:[0.6,1.5]},{n:'Bernstein-Makrele',e:'✨🐟',r:'legendär',pts:520,sz:[2.8,5.5]}],
+  [{n:'Thunfisch',e:'🐟',r:'selten',pts:300,sz:[8,25]},{n:'Schwertfisch',e:'🦈',r:'selten',pts:340,sz:[10,30]},{n:'Goldmakrele',e:'🐠',r:'häufig',pts:180,sz:[1.2,3.0]},{n:'Bonito',e:'🐟',r:'häufig',pts:160,sz:[1.0,2.5]},{n:'Blauflossen-Riese',e:'🌊🐟',r:'legendär',pts:700,sz:[25,60]}],
+  [{n:'Riesenkrake',e:'🐙',r:'episch',pts:450,sz:[15,40]},{n:'Geisterwels',e:'👻🐟',r:'episch',pts:500,sz:[12,35]},{n:'Tiefsee-Angler',e:'🎣🐟',r:'legendär',pts:650,sz:[5,15]},{n:'Leviathan',e:'🐉',r:'legendär',pts:900,sz:[40,90]},{n:'Abyss-Krake',e:'🌑🐙',r:'legendär',pts:850,sz:[20,50]}]
+];
+const $=id=>document.getElementById(id), rand=n=>Math.floor(Math.random()*n), pick=a=>a[rand(a.length)];
+function save(){localStorage.setItem(KEY,JSON.stringify(s))}
+function theme(){document.body.className=s.theme==='cyan'?'':'theme-'+s.theme} theme();
+function navigate(t){ if(game && !confirm('Angelrunde verlassen? Fortschritt dieser Runde geht verloren.')) return; clearTimers(); game=null; tab=t; render(); window.scrollTo(0,0)}
+function clearTimers(){ for(let k in timers){ if(timers[k]){ clearInterval(timers[k]); clearTimeout(timers[k]); } timers[k]=null}}
+function render(){
+  $('nav').innerHTML=[
+    ['home','◇ Spielen'],
+    ['dex','▦ Fische'],
+    ['shop','✧ Shop'],
+    ['ranks','▤ Rekorde'],
+    ['settings','⚙ Info']
+  ].map(([t,n])=>`<button class="${tab===t?'active':''}" onclick="navigate('${t}')">${n}</button>`).join('');
+  if(tab==='home') home();
+  if(tab==='dex') dex();
+  if(tab==='shop') shop();
+  if(tab==='ranks') ranks();
+  if(tab==='settings') settings();
+}
+function home(){
+  $('view').innerHTML=`
+  <section class="hero">
+    <div class="eyebrow">DEIN REVIER WARTET</div>
+    <h1>Ein Wurf.<br><span class="glow">Ein neues Abenteuer.</span></h1>
+    <p>Wirf die Angel aus, meistere den Drill und fülle dein Fischlexikon. Offline, fair und ohne Käufe.</p>
+  </section>
+  <div class="stats">
+    <div class="stat"><b>${s.xp}</b><small>Gesamt-XP</small></div>
+    <div class="stat"><b>${s.coins} 🪙</b><small>Münzen</small></div>
+    <div class="stat"><b>${s.best}</b><small>Rekord</small></div>
+  </div>
+  <div class="stats" style="margin-top:10px">
+    <div class="stat"><b>${s.total}</b><small>Fische gefangen</small></div>
+    <div class="stat"><b>${s.caughtDex.length}/25</b><small>Arten entdeckt</small></div>
+    <div class="stat"><b>${s.unlocked+1}/6</b><small>Reviere frei</small></div>
+  </div>
+  <div class="card featured">
+    <div class="eyebrow">NÄCHSTE MISSION</div>
+    <h2>${worlds[s.unlocked][1]} <small style="color:var(--muted)">${worlds[s.unlocked][0]}</small></h2>
+    <p>8 Würfe · 3 entkommene Fische erlaubt · Ab 6 Fängen geht's weiter.</p>
+    <button class="primary" onclick="start(${s.unlocked},false)">🎣 Mission starten →</button>
+  </div>
+  <h2 class="sectionhead">Deine Reviere</h2>
+  ${worlds.map((w,i)=>`
+    <div class="card">
+      <div class="world">
+        <div class="num">${w[0]}</div>
+        <div class="info"><h3>${w[1]}</h3><p>${w[2]}</p></div>
+        <button ${i>s.unlocked?'disabled':''} onclick="start(${i},false)">${i>s.unlocked?'🔒 Gesperrt':'🎣 Angeln'}</button>
+      </div>
+      <div class="progress"><i style="width:${i<s.unlocked?100:i===s.unlocked? (s.history.filter(h=>h.world===i && h.right>=6).length?100:45):0}%"></i></div>
+    </div>`).join('')}
+  <div class="card">
+    <div class="eyebrow">FREIES TRAINING</div>
+    <h3>Ohne Druck üben.</h3>
+    <p>Alle Reviere ausprobieren — ohne Leben, ohne Ranglistenpunkte. Perfekt zum Lernen des Drills.</p>
+    <div class="answers" style="margin-top:12px">
+      ${worlds.map((w,i)=>`<button onclick="start(${i},true)">🎣 ${w[0]} · ${w[1]}</button>`).join('')}
+    </div>
+  </div>
+  <p class="notice">Tipp: Warte auf den Biss, hau im richtigen Moment an und halte den Fisch in der grünen Zone!</p>
+  `;
+}
+function rarityBadge(r){
+  if(r==='häufig') return `<span class="badge badge-common">HÄUFIG</span>`;
+  if(r==='selten') return `<span class="badge badge-rare">SELTEN</span>`;
+  if(r==='episch') return `<span class="badge badge-epic">EPISCH</span>`;
+  return `<span class="badge badge-legend">LEGENDÄR</span>`;
+}
+function dex(){
+  const all = fishPools.flat();
+  $('view').innerHTML=`
+  <section class="hero"><div class="eyebrow">FISCHLEXIKON</div><h1>Was du<br><span class="glow">schon gefangen hast.</span></h1><p>${s.caughtDex.length} von 25 Arten entdeckt. Seltene Fische bringen mehr Punkte.</p></section>
+  <div class="dex">
+    ${all.map(f=>{
+      const caught = s.caughtDex.includes(f.n);
+      return `<div class="dexcard ${caught?'caught':''}">
+        <div class="bigfish">${f.e}</div>
+        <b>${f.n}</b>
+        <small>${f.sz[0]} – ${f.sz[1]} kg · ${f.pts} P</small>
+        <div style="margin-top:6px">${rarityBadge(f.r)}</div>
+        <div style="margin-top:6px;font-size:11px;color:var(--muted)">${caught?'✓ Gefangen':'? Noch nicht gefangen'}</div>
+      </div>`
+    }).join('')}
+  </div>
+  <div class="card" style="margin-top:14px"><p class="notice">Tipp: In höheren Revieren tauchen seltene Arten häufiger auf. Legenden brauchen volle Konzentration im Drill.</p></div>
+  `;
+}
+function shop(){
+  $('view').innerHTML=`
+  <section class="hero"><div class="eyebrow">DEIN STIL. DEINE AUSRÜSTUNG.</div><h1>Mach dich<br><span class="glow">bereit für mehr.</span></h1><p>${s.coins} Münzen verfügbar · Nur erspielt, keine echten Käufe.</p></section>
+  ${[
+    ['cyan','Arktis-Blau','Klares Wasser, kühles Licht. Standard-Design.',0],
+    ['pink','Sonnenuntergang','Warm wie die Abendküste.',120],
+    ['lime','Algenwald','Grünes Tiefsee-Leuchten.',120]
+  ].map(([id,name,desc,cost])=>`
+    <div class="card shopitem"><div><h3>${name}</h3><p>${desc}</p></div>
+    <button onclick="buyTheme('${id}',${cost})">${s.theme===id?'✓ Aktiv':s.themes.includes(id)?'Nutzen':cost+' 🪙'}</button></div>`).join('')}
+  <div class="card shopitem"><div><h3>🔊 Echolot</h3><p>Zeigt im Training die Biss-Vorwarnung — perfekt zum Lernen.</p></div>
+    <button onclick="buySonar()" ${s.sonar?'disabled':''}>${s.sonar?'✓ Aktiv':'180 🪙'}</button></div>
+  <div class="card shopitem"><div><h3>🎣 Profi-Rute</h3><p>+15 % Münzen pro Fang und etwas größere grüne Zone.</p></div>
+    <button onclick="buyRod()" ${s.rod?'disabled':''}>${s.rod?'✓ Besitzt du':'260 🪙'}</button></div>
+  <p class="notice">Alle Fänge zählen gleich. Keine Pay-to-Win-Vorteile im Drill.</p>`;
+}
+function buyTheme(id,cost){
+  if(!s.themes.includes(id)){
+    if(s.coins<cost){alert('Zu wenig Münzen. Angle ein paar Missionen!');return}
+    s.coins-=cost; s.themes.push(id);
+  }
+  s.theme=id; save(); theme(); shop();
+}
+function buySonar(){
+  if(s.sonar) return;
+  if(s.coins<180){alert('Du brauchst 180 Münzen.');return}
+  s.coins-=180; s.sonar=true; save(); shop();
+}
+function buyRod(){
+  if(s.rod) return;
+  if(s.coins<260){alert('Du brauchst 260 Münzen.');return}
+  s.coins-=260; s.rod=1; save(); shop();
+}
+function ranks(){
+  let rows=[...s.history].sort((a,b)=>b.score-a.score).slice(0,10);
+  $('view').innerHTML=`
+  <section class="hero"><div class="eyebrow">DEINE BESTEN FÄNGE</div><h1>Immer ein<br><span class="glow">bisschen größer.</span></h1><p>Lokale Bestenliste auf diesem Gerät.</p></section>
+  <div class="card"><div class="row"><h3>🏆 Top 10 Runden</h3><span class="pill">LOKAL</span></div>
+    ${rows.length? rows.map((r,i)=>`<div class="rank"><b>${i+1}</b><div>${worlds[r.world][1]}<br><small>${r.date} · ${r.right}/8 Fänge</small></div><b style="color:var(--cyan)">${r.score}</b></div>`).join('') : '<p>Noch keine Ergebnisse. Starte deine erste Mission!</p>'}
+  </div>
+  <div class="card"><h3>🌍 Globale Rangliste</h3><p>Noch nicht verbunden. Diese Version sendet keine Daten und zeigt keine erfundenen Mitspieler.</p><small>Später: Accounts, servergeprüfte Rekorde und Events.</small></div>`;
+}
+function settings(){
+  $('view').innerHTML=`
+  <section class="hero"><div class="eyebrow">ANGELSPIEL · PROTOTYP 1.0</div><h1>Gut zu wissen.</h1></section>
+  <div class="card"><h3>🎣 So angelst du</h3><p><b>1. Auswerfen:</b> Beobachte die Kraft-Leiste, tippe bei grün-gelber Zone für weiten Wurf.</p><p><b>2. Warten:</b> Der Pose zuckt — bei <b>BISS!</b> sofort anhauen.</p><p><b>3. Drill:</b> Halte den weißen Marker in der grünen Zone. Tippe „Ziehen!" im richtigen Moment — 3 gute Treffer fangen den Fisch.</p><p><b>Mission:</b> 8 Würfe, 3 Leben. Ab 6 Fängen schaltest du das nächste Revier frei.</p></div>
+  <div class="card"><h3>🔒 Offline & fair</h3><p>Alle Fänge bleiben lokal auf deinem Gerät. Keine Konten, keine Werbung, keine Käufe. Beim Löschen der App gehen lokale Daten verloren.</p></div>
+  <div class="card"><h3>🐟 Fische & Seltenheit</h3><p>Fische werden aus Revier-Pools gewürfelt. Gewicht und Punkte variieren pro Fang. Seltene und legendäre Fische bringen mehr XP und Münzen.</p></div>
+  <button class="ghost" style="width:100%" onclick="reset()">Lokalen Spielstand zurücksetzen</button>`;
+}
+function reset(){ if(confirm('Alle Fänge, Münzen und Freischaltungen löschen?')){ localStorage.removeItem(KEY); location.reload(); } }
+
+// === SPIEL LOGIK ===
+function makeFish(w){
+  const pool = fishPools[w];
+  // Gewichtete Auswahl: häufig öfter
+  let r = Math.random();
+  let chosen;
+  if(w===5 && r>0.55) chosen = pick(pool.slice(3)); // Legenden häufiger im Legendenreich
+  else if(r>0.82) chosen = pick(pool.slice(3));
+  else if(r>0.55) chosen = pick(pool.slice(2,4));
+  else chosen = pick(pool.slice(0,3));
+  const weight = (chosen.sz[0] + Math.random()*(chosen.sz[1]-chosen.sz[0])).toFixed(1);
+  const bonus = Math.round((parseFloat(weight)/chosen.sz[1])*40);
+  const pts = chosen.pts + bonus + (chosen.r==='selten'?20:chosen.r==='episch'?60:chosen.r==='legendär'?120:0);
+  return { ...chosen, weight, pts }
+}
+function start(w,training){
+  tab='home';
+  game={w,training,index:0,right:0,lives:3,score:0,combo:0,fish:null,phase:'casting',power:0,dir:1,zoneCenter:50,zoneWidth:24,marker:0,markerDir:1,progress:0,successes:0};
+  $('nav').innerHTML='';
+  nextFish();
+  window.scrollTo(0,0);
+}
+function nextFish(){
+  if(!game) return;
+  if(game.index>=8 || (!game.training && game.lives<=0)) { finish(); return; }
+  game.fish = makeFish(game.w);
+  game.phase='casting';
+  game.power=0; game.dir=1; game.progress=0; game.successes=0;
+  clearTimers();
+  drawCasting();
+  // Power animation
+  timers.power=setInterval(()=>{
+    if(!game || game.phase!=='casting') return;
+    game.power += game.dir*3.2;
+    if(game.power>=100){game.power=100; game.dir=-1}
+    if(game.power<=0){game.power=0; game.dir=1}
+    const el=$('powerfill'); if(el) el.style.width=game.power+'%';
+    const txt=$('powertext'); if(txt){
+      let q='schwach'; if(game.power>33) q='gut'; if(game.power>66) q='perfekt!';
+      txt.textContent = Math.round(game.power)+'% · '+q;
+      txt.style.color = game.power>66? 'var(--teal)' : game.power>33? 'var(--amber)' : 'var(--muted)';
+    }
+  },28);
+}
+function drawTopBar(){
+  const g=game;
+  return `<div class="row" style="margin-top:10px"><button class="ghost" onclick="navigate('home')">←</button><span class="pill">${g.training?'TRAINING':'MISSION'} · ${worlds[g.w][1]}</span><b style="color:#ffb3c6">${g.training?'∞':'❤'.repeat(g.lives)}</b></div>
+  <div class="progress"><i style="width:${g.index/8*100}%"></i></div>
+  <div class="row" style="margin-top:12px"><small>WURF ${g.index+1} / 8</small><span class="eyebrow">${g.score} P · ${g.combo}× KOMBO</span></div>`;
+}
+function drawCasting(){
+  const g=game;
+  $('view').innerHTML=`
+    ${drawTopBar()}
+    <div class="card">
+      <div class="eyebrow">DEIN WURF</div>
+      <div class="question" style="margin-bottom:6px">Beobachte die Kraft-Leiste und wirf im richtigen Moment!</div>
+      <div class="powerbox">
+        <div class="powerbar"><div id="powerfill" class="powerfill"></div></div>
+        <div class="powerlabels"><span>zu schwach</span><span id="powertext">0% · schwach</span><span>zu stark</span></div>
+      </div>
+      <button class="primary" onclick="cast()">🎣 Auswerfen!</button>
+      <div class="lake"><div class="water"></div><div class="line"></div><div class="bobber" style="top:70%;opacity:.4"></div></div>
+      <p class="notice">${g.training?'Training: egal wie du wirfst — der Fisch beißt trotzdem.':'Ein guter Wurf erhöht leicht die Chance auf seltene Fische.'}</p>
+    </div>`;
+}
+function cast(){
+  if(!game || game.phase!=='casting') return;
+  clearInterval(timers.power); timers.power=null;
+  // Power bonus influences fish rarity slightly: if power 66-90 keep fish, if low reroll to more common
+  if(game.power<30 && Math.random()<0.7){
+    // reroll to common
+    const pool=fishPools[game.w];
+    game.fish = {...pick(pool.slice(0,2)), weight: game.fish.weight, pts: game.fish.pts-15};
+    // regenerate properly but keep flavor
+    game.fish = makeFish(game.w);
+  }
+  game.phase='waiting';
+  drawWaiting();
+  const delay = 900 + rand(2400) + (s.sonar? 0:0);
+  if(s.sonar && game.training){
+    let c= Math.ceil(delay/1000);
+    const el=$('sonar'); if(el) el.textContent=`🔊 Echolot: Biss in ~${c}s`;
+  }
+  timers.bite=setTimeout(()=>{ if(game && game.phase==='waiting') triggerBite(); }, delay);
+}
+function drawWaiting(){
+  const g=game;
+  $('view').innerHTML=`
+    ${drawTopBar()}
+    <div class="card">
+      <div class="eyebrow">POSE IM WASSER</div>
+      <div class="question" id="waittext">Warten auf Biss…</div>
+      <div class="lake" id="lake"><div class="water"></div><div class="line"></div><div id="bob" class="bobber rippling"></div><div id="ripple" class="ripple"></div></div>
+      ${s.sonar && g.training?'<div id="sonar" style="text-align:center;font-size:13px;color:var(--cyan);margin-top:8px">🔊 Echolot aktiv…</div>':''}
+      <div style="text-align:center;margin-top:8px"><small style="color:var(--muted)">Gleich zappelt die Pose — dann schnell anhauen!</small></div>
+    </div>
+  `;
+  // ripple loop
+  let rip = setInterval(()=>{
+    if(!game || game.phase!=='waiting'){ clearInterval(rip); return;}
+    const r=$('ripple'); if(!r) return;
+    r.classList.remove('animate'); void r.offsetWidth; r.classList.add('animate');
+  }, 1600);
+  timers.ripple=rip;
+}
+function triggerBite(){
+  if(!game) return;
+  game.phase='bite';
+  clearInterval(timers.ripple);
+  $('waittext').innerHTML=`<span style="color:var(--amber);font-weight:900;font-size:26px">❗ BISS ❗</span>`;
+  const bob=$('bob'); if(bob) bob.className='bobber biting';
+  const lake=$('lake'); if(lake) lake.style.borderColor='#ffb84d';
+  $('view').innerHTML += ``; // keep
+  // append bite button
+  const card = document.querySelector('.card');
+  const btn = document.createElement('button');
+  btn.className='primary pulse';
+  btn.style.marginTop='12px';
+  btn.style.background='linear-gradient(135deg,#ffb84d,#ff7eb6)';
+  btn.textContent='⚡ ANHAUEN! ⚡';
+  btn.onclick=biteHit;
+  card.appendChild(btn);
+  // auto miss after window
+  const windowMs = game.training? 1400 : 900;
+  timers.bite=setTimeout(()=>{
+    if(game && game.phase==='bite') biteMiss();
+  }, windowMs);
+}
+function biteHit(){
+  if(!game || game.phase!=='bite') return;
+  clearTimeout(timers.bite);
+  game.phase='fight';
+  drawFight();
+  startFightLoop();
+}
+function biteMiss(){
+  if(!game || game.phase!=='bite') return;
+  clearTimeout(timers.bite);
+  game.phase='miss';
+  handleEscape('Zu spät — der Fisch ist weg!');
+}
+function drawFight(){
+  const g=game;
+  // set zone
+  g.zoneCenter = 22 + rand(56);
+  g.zoneWidth = Math.max(14, 26 - g.w*1.8 - (g.fish.r==='legendär'?6: g.fish.r==='episch'?4:0) + (s.rod?4:0));
+  g.marker=0; g.markerDir=1; g.progress=0; g.successes=0;
+  const speedHint = g.w>=4? 'Schneller Fisch!':'';
+  $('view').innerHTML=`
+    ${drawTopBar()}
+    <div class="card">
+      <div class="eyebrow">DRILL · ${g.fish.e} ${g.fish.n.toUpperCase()}</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
+        <div class="bigfish">${g.fish.e}</div>
+        <div><b>${g.fish.n}</b><br><small style="color:var(--muted)">${g.fish.weight} kg · ${rarityBadge(g.fish.r)} · ${g.fish.pts} P Basis</small></div>
+        <div style="margin-left:auto;text-align:right"><small style="color:var(--muted)">FORTSCHRITT</small><div style="font-weight:900;color:var(--teal)" id="progtext">0%</div></div>
+      </div>
+      <div class="fightbar" id="fightbar">
+        <div id="zone" class="zone" style="left:${g.zoneCenter - g.zoneWidth/2}%;width:${g.zoneWidth}%"></div>
+        <div id="marker" class="marker" style="left:0%"></div>
+      </div>
+      <div class="catchmeter"><i id="catchfill" style="width:0%"></i></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px"><small style="color:var(--muted)">${speedHint}</small><small id="succ">${g.successes}/3 Treffer</small></div>
+      <button class="primary" id="pullbtn" onclick="pull()">🎣 Ziehen!</button>
+      <p class="notice">Tippe „Ziehen!" genau wenn der weiße Marker in der grünen Zone ist.</p>
+    </div>
+  `;
+}
+function startFightLoop(){
+  const g=game;
+  let ticks=0;
+  // speed depends on world + rarity
+  const baseSpeed = 1.9 + g.w*0.28 + (g.fish.r==='selten'?0.4:g.fish.r==='episch'?0.7:g.fish.r==='legendär'?1.0:0);
+  timers.fight=setInterval(()=>{
+    if(!game || game.phase!=='fight') return;
+    g.marker += g.markerDir * baseSpeed;
+    if(g.marker>=100){ g.marker=100; g.markerDir=-1}
+    if(g.marker<=0){ g.marker=0; g.markerDir=1}
+    const m=$('marker'); if(m) m.style.left = g.marker + '%';
+    ticks++;
+    // slight decay if player idle?
+    if(ticks%40===0 && g.progress>0){
+      g.progress=Math.max(0,g.progress-2);
+      const cf=$('catchfill'); if(cf) cf.style.width=g.progress+'%';
+      const pt=$('progtext'); if(pt) pt.textContent=Math.round(g.progress)+'%';
+    }
+    // timeout after 13s
+    if(ticks> 600){ // ~13s at 22ms
+      clearInterval(timers.fight);
+      if(game.phase==='fight') handleEscape('Der Fisch hat sich losgerissen!');
+    }
+  },22);
+}
+function pull(){
+  if(!game || game.phase!=='fight') return;
+  const g=game;
+  const zoneL = g.zoneCenter - g.zoneWidth/2;
+  const zoneR = g.zoneCenter + g.zoneWidth/2;
+  const inside = g.marker >= zoneL && g.marker <= zoneR;
+  const btn=$('pullbtn');
+  if(inside){
+    g.successes++;
+    g.progress = Math.min(100, g.progress + 36);
+    if(btn){ btn.textContent='✓ Gut!'; btn.style.background='#123e31'; setTimeout(()=>{if(btn)btn.textContent='🎣 Ziehen!'},250)}
+    // move zone a bit for next
+    g.zoneCenter = 18 + rand(64);
+    const zoneEl=$('zone'); if(zoneEl){ zoneEl.style.left=(g.zoneCenter - g.zoneWidth/2)+'%'; zoneEl.style.transition='.2s'; setTimeout(()=>zoneEl.style.transition='',220)}
+  }else{
+    g.progress = Math.max(0, g.progress - 16);
+    if(btn){ btn.textContent='✕ Daneben!'; btn.style.background='#4c2038'; setTimeout(()=>{if(btn) btn.textContent='🎣 Ziehen!'; btn.style.background='';},260)}
+    // penalty flash
+    const bar=$('fightbar'); if(bar){ bar.style.borderColor='#ff7ca2'; setTimeout(()=>bar.style.borderColor='',200)}
+  }
+  const cf=$('catchfill'); if(cf) cf.style.width=g.progress+'%';
+  const pt=$('progtext'); if(pt) pt.textContent=Math.round(g.progress)+'%';
+  const succ=$('succ'); if(succ) succ.textContent=g.successes+'/3 Treffer';
+  if(g.successes>=3 || g.progress>=100){
+    clearInterval(timers.fight);
+    handleCatch();
+  }
+}
+function handleCatch(){
+  const g=game;
+  clearTimers();
+  const bonus = Math.min(g.combo,5)*18;
+  const earned = g.fish.pts + bonus;
+  const coinsEarned = Math.round( (8 + Math.round(parseFloat(g.fish.weight))) * (g.fish.r==='häufig'?1:g.fish.r==='selten'?1.4:g.fish.r==='episch'?1.8:2.2) * (s.rod?1.15:1) );
+  g.score += earned;
+  g.right++;
+  g.combo++;
+  if(!g.training){
+    // track dex
+    if(!s.caughtDex.includes(g.fish.n)) s.caughtDex.push(g.fish.n);
+    s.total++;
+  }
+  // feedback screen
+  $('view').innerHTML=`
+    ${drawTopBar()}
+    <div class="card" style="text-align:center">
+      <div class="eyebrow">GEFANGEN!</div>
+      <div class="bigfish pulse">${g.fish.e}</div>
+      <h2>${g.fish.n}</h2>
+      <p>${g.fish.weight} kg · ${rarityBadge(g.fish.r)}</p>
+      <div class="feedback" style="text-align:left">
+        <strong>✓ Erfolg!</strong> Du hast den Fisch sicher an Land gezogen.<br>
+        <small>Basis: ${g.fish.pts} P · Kombo-Bonus: +${bonus} P · Gesamt: ${earned} P</small><br>
+        <small>${!g.training? `+${coinsEarned} 🪙 · +${Math.round(earned/4)} XP` : 'Training — keine Belohnungen.'}</small>
+        <button class="primary" onclick="advance(${coinsEarned},${earned})">${g.index===7 || (!g.training && g.lives===0) ? 'Ergebnis ansehen' : 'Weiter →'}</button>
+      </div>
+    </div>
+  `;
+  // store pending rewards to apply on advance
+  g.pendingCoins = coinsEarned;
+  g.pendingXP = Math.round(earned/4);
+  g.pendingEarned = earned;
+}
+function handleEscape(msg){
+  const g=game;
+  clearTimers();
+  g.combo=0;
+  if(!g.training) g.lives--;
+  $('view').innerHTML=`
+    ${drawTopBar()}
+    <div class="card" style="text-align:center">
+      <div class="eyebrow" style="color:#ff7ca2">ENTKOMMEN</div>
+      <div class="bigfish">💨🐟</div>
+      <h2>Entwischt!</h2>
+      <p>${msg}</p>
+      <p><small>${g.fish.n} · ${g.fish.weight} kg war zu flink.</small></p>
+      <div class="feedback" style="text-align:left">
+        <strong>✕ Nicht geklappt.</strong> ${g.training? 'Im Training kein Problem — gleich der nächste Wurf.':'Du verlierst ein Herz. Kombobonus zurückgesetzt.'}<br>
+        <button class="primary" onclick="advance(0,0)">${g.index===7 || (!g.training && g.lives===0) ? 'Ergebnis ansehen' : 'Weiter →'}</button>
+      </div>
+    </div>
+  `;
+  g.pendingCoins=0; g.pendingXP=0; g.pendingEarned=0;
+}
+function advance(coinsEarned, earned){
+  if(!game) return;
+  // apply pending if not yet? Already have
+  // we used coinsEarned param from button onclick string, but ensure game still
+  game.index++;
+  // apply rewards if not training and was catch
+  if(!game.training){
+    // we need to know if it was catch: coinsEarned>0
+    // Actually we lose game.pending after? Use passed values
+    s.coins += coinsEarned;
+    s.xp += earned? Math.round(earned/4) : 0;
+    // best will be updated at finish
+  }
+  save();
+  nextFish();
+}
+function finish(){
+  const g=game;
+  const passed = g.right>=6;
+  const totalEarned = g.score; // already sum
+  if(!g.training){
+    s.best=Math.max(s.best, g.score);
+    if(passed && g.w===s.unlocked) s.unlocked=Math.min(5, s.unlocked+1);
+    s.history.unshift({score:g.score, world:g.w, date: new Date().toLocaleDateString('de-DE'), right:g.right});
+    s.history=s.history.slice(0,30);
+    save();
+  }
+  clearTimers();
+  game=null;
+  render();
+  // overlay finish screen
+  const title = g.training? 'Training beendet' : (passed? 'Revier gemeistert!' : 'Knapp daneben');
+  const sub = g.training? 'Übung macht den Meister.' : (passed? 'Stark geangelt — nächstes Revier frei!' : '6 Fänge brauchst du für das nächste Revier.');
+  $('view').innerHTML=`
+    <div class="hero" style="text-align:center">
+      <div class="eyebrow">${g.training?'TRAINING ABGESCHLOSSEN':'MISSION AUSGEWERTET'}</div>
+      <h1>${title}</h1>
+      <div class="score">${g.score}</div>
+      <p>Punkte · ${g.right} von ${g.index} Fischen gefangen ${!g.training?'· '+g.lives+' ❤ übrig':''}</p>
+      <div class="card"><h3>${sub}</h3><p>${g.training?'Kein XP, keine Münzen im Training — aber Erfahrung!':`In dieser Runde erspielt. Dein Rekord: ${s.best} P.`}</p></div>
+      <button class="primary" onclick="start(${g.w},${g.training})">Noch eine Runde 🎣</button>
+      <button class="ghost" style="width:100%;margin-top:10px" onclick="render()">Zur Übersicht</button>
+    </div>`;
+}
+
+render();
+</script></body></html>
